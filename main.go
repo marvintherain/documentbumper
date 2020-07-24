@@ -12,10 +12,33 @@ import (
 )
 
 func main() {
+	files := WalkAndFilter(os.Args[1])
+	
+	lenFiles := int64(len(files))
+	bar := progressbar.Default(lenFiles)
+	bar.Add(1)
+	for i := 0; i < len(files); i++ {
+		suffix := "-bumped"
+		src := files[i]
+		dest := files[i] + suffix
+		time.Sleep(40 * time.Millisecond)
+		nBytes, err := copy(src, dest)
+		bar.Add(1)
+		if err != nil {
+			fmt.Printf("Error copying file %s\n", files[i])
+		} else {
+			RemoveAndRename(src, dest)
+			fmt.Printf("%s copied, %d bytes\n", files[i], nBytes)
+		}
+	}
+
+}
+
+// WalkAndFilter : walks the root directory filters for files older than 23 months
+func WalkAndFilter(root string) []string {
 	var files []string
 	twentyThreeMonthsAgo := time.Now().AddDate(0, -23, 0)
 
-    root := os.Args[1]
     err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() == false {
 			d := info.Sys().(*syscall.Win32FileAttributeData)
@@ -32,25 +55,7 @@ func main() {
     if err != nil {
         panic(err)
 	}
-	
-	lenFiles := int64(len(files))
-	bar := progressbar.Default(lenFiles)
-	bar.Add(1)
-	for i := 0; i < len(files); i++ {
-		suffix := "-bumped"
-		src := files[i]
-		dest := files[i] + suffix
-		bar.Add(1)
-		time.Sleep(40 * time.Millisecond)
-		nBytes, err := copy(src, dest)
-		if err != nil {
-			fmt.Printf("Error copying file %s\n", files[i])
-		} else {
-			RemoveAndRename(src, dest)
-			fmt.Printf("%s copied, %d bytes\n", files[i], nBytes)
-		}
-	}
-
+	return files 
 }
 
 // copy : copies the file from source to destination
