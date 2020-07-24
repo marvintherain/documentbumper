@@ -12,9 +12,9 @@ import (
 
 func main() {
 	var files []string
-	twentyThreeMonthsAgo := time.Now().AddDate(0, -2, 0)
+	twentyThreeMonthsAgo := time.Now().AddDate(0, -23, 0)
 
-    root := "test"
+    root := os.Args[1]
     err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() == false {
 			d := info.Sys().(*syscall.Win32FileAttributeData)
@@ -33,7 +33,6 @@ func main() {
 	}
 	
 	for _, entry := range files {
-		// fmt.Println(entry)
 		suffix := "-bumped"
 		src := entry
 		dest := entry + suffix
@@ -69,7 +68,7 @@ func copy(src, dst string) {
 	if err != nil {
 		log.Fatal(err)
 	} else {
-		fmt.Printf("Successfully copied %d bytes", nBytes)
+		fmt.Printf("%s, successfully copied %d bytes\n", src, nBytes)
 	}
 }
 
