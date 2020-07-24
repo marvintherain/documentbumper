@@ -21,7 +21,6 @@ func main() {
 		suffix := "-bumped"
 		src := files[i]
 		dest := files[i] + suffix
-		time.Sleep(40 * time.Millisecond)
 		nBytes, err := copy(src, dest)
 		bar.Add(1)
 		if err != nil {
