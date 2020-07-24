@@ -13,6 +13,11 @@ import (
 
 func main() {
 	files := WalkAndFilter(os.Args[1])
+
+	if len(files) == 0 {
+		fmt.Println("no files to bump")
+		return
+	}
 	
 	lenFiles := int64(len(files))
 	bar := progressbar.Default(lenFiles)
