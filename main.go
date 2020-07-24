@@ -1,13 +1,14 @@
 package main 
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 	"syscall"
 	"log"
 	"io"
+	"github.com/schollz/progressbar"
 )
 
 func main() {
@@ -32,21 +33,31 @@ func main() {
         panic(err)
 	}
 	
-	for _, entry := range files {
+	lenFiles := int64(len(files))
+	bar := progressbar.Default(lenFiles)
+	bar.Add(1)
+	for i := 0; i < len(files); i++ {
 		suffix := "-bumped"
-		src := entry
-		dest := entry + suffix
-		copy(src, dest)
-		RemoveAndRename(src, dest)
+		src := files[i]
+		dest := files[i] + suffix
+		bar.Add(1)
+		time.Sleep(40 * time.Millisecond)
+		nBytes, err := copy(src, dest)
+		if err != nil {
+			fmt.Printf("Error copying file %s\n", files[i])
+		} else {
+			RemoveAndRename(src, dest)
+			fmt.Printf("%s copied, %d bytes\n", files[i], nBytes)
+		}
 	}
 
 }
 
 // copy : copies the file from source to destination
-func copy(src, dst string) {
+func copy(src, dst string) (int64, error) {
 	sourceFileStat, err := os.Stat(src)
 	if err != nil {
-			log.Fatal(err)
+			return 0, err
 	}
 
 	if !sourceFileStat.Mode().IsRegular() {
@@ -55,21 +66,20 @@ func copy(src, dst string) {
 
 	source, err := os.Open(src)
 	if err != nil {
-			log.Fatal(err)
+			return 0, err
 	}
 	defer source.Close()
 
 	destination, err := os.Create(dst)
 	if err != nil {
-			log.Fatal(err)
+			return 0, err
 	}
 	defer destination.Close()
 	nBytes, err := io.Copy(destination, source)
 	if err != nil {
-		log.Fatal(err)
-	} else {
-		fmt.Printf("%s, successfully copied %d bytes\n", src, nBytes)
-	}
+		return 0, err
+	 } 
+	return nBytes, err
 }
 
 // RemoveAndRename : Renames destination to source

@@ -1,6 +1,7 @@
 # Document creation date bumper
 ## Dependencies
-go version go1.14.3
+* go version go1.14.3
+* [progressbar](https://github.com/schollz/progressbar)
 ## What does it do?
 Changes a documents creation date (**Windows only!**) to system time by copying it when the creation date is 23 months in the past.
 ## Motivation
