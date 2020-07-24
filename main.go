@@ -13,7 +13,7 @@ func main() {
 	twentyThreeMonthsAgo := time.Now().AddDate(0, -2, 0)
 	// fileCreation := make(map[string]time.Time)
 
-    root := "C:\\Users\\danie\\OneDrive\\sync"
+    root := "test"
     err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if info.IsDir() == false {
 			d := info.Sys().(*syscall.Win32FileAttributeData)
